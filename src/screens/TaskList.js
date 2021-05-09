@@ -9,11 +9,16 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import moment from 'moment'
 import 'moment/locale/pt-br'
 import Task from '../components/Task'
+import AddTask from './AddTask'
+
+
+
 
 export default class TaskList extends Component{
 
     state = {
         showDoneTasks: true,
+        showAddTask: false,
         visibleTask: [],
         tasks:[
             {
@@ -68,6 +73,9 @@ export default class TaskList extends Component{
         return (
             
             <View style={styles.container}>
+                <AddTask isVisible={this.state.showAddTask}
+                    onCancel={() => this.setState({showAddTask: false})}
+                />
                 <ImageBackground 
                     source={todayImage}
                     style={styles.background}
@@ -94,6 +102,13 @@ export default class TaskList extends Component{
                         renderItem={({item}) => <Task {...item} toggleTask={this.toggleTask} />}
                     />
                 </View>
+                <TouchableOpacity 
+                    style={styles.addButton}
+                    activeOpacity={0.7}
+                    onPress={() => this.setState({ showAddTask: true })}
+                    >
+                    <Icon name="plus" size={20} color={commonStyles.colors.secondary}/>
+                </TouchableOpacity>
             </View>
         )
     }
@@ -132,5 +147,16 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         marginHorizontal: 20,
         marginTop: Platform.OS === 'ios' ? 40 : 10,
+    },
+    addButton:{
+        backgroundColor: commonStyles.colors.today,
+        position: 'absolute',
+        right: 30,
+        bottom: 30,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 })
