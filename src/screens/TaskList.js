@@ -1,5 +1,14 @@
 import React, { Component } from 'react'
-import { Text, View, ImageBackground, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native'
+import { 
+    Text,
+    View,
+    ImageBackground, 
+    StyleSheet,
+    FlatList,
+    TouchableOpacity,
+    Platform,
+    Alert,
+} from 'react-native'
 
 import commonStyles from '../commonStyles'
 import todayImage from '../../assets/imgs/today.jpg'
@@ -68,6 +77,28 @@ export default class TaskList extends Component{
         this.setState({tasks}, this.filterTasks)
     }
 
+    addTask = newTask => {
+        if(!newTask.desc || !newTask.desc.trim()){
+            Alert.alert("Dados Inválidos", "Descrição não informada!")
+            return
+        }
+
+        const tasks =  [ ...this.state.tasks ]
+        tasks.push({
+            id: Math.random(),
+            desc: newTask.desc,
+            estimateAt: newTask.date,
+            doneAt: null
+        })
+
+        this.setState({ tasks, showAddTask: false }, this.filterTasks)
+    }
+
+    deleteTask = id => {
+        const tasks = this.state.tasks.filter(task => task.id !== id)
+        this.setState({ tasks }, this.filterTasks)
+    }
+
     render(){
         const today = moment().locale('pt-br').format('ddd, D [de], MMMM')
         return (
@@ -75,6 +106,7 @@ export default class TaskList extends Component{
             <View style={styles.container}>
                 <AddTask isVisible={this.state.showAddTask}
                     onCancel={() => this.setState({showAddTask: false})}
+                    onSave={this.addTask}
                 />
                 <ImageBackground 
                     source={todayImage}
@@ -99,7 +131,7 @@ export default class TaskList extends Component{
                     <FlatList 
                         data={this.state.visibleTasks}
                         keyExtractor={item => `${item.id}`}
-                        renderItem={({item}) => <Task {...item} toggleTask={this.toggleTask} />}
+                        renderItem={({item}) => <Task {...item} onToggleTask={this.toggleTask} onDelete={this.deleteTask} />}
                     />
                 </View>
                 <TouchableOpacity 
